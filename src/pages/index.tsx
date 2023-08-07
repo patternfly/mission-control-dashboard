@@ -75,13 +75,18 @@ async function foo() {
 
   const repos = await getRepos(rejectedPromise);
 
-  repos.forEach(async repo => {
+  const results = repos.map(async repo => {
     const bumpPR = await getBumpPR(repo.name, rejectedPromise);
 
     const { name, number } = bumpPR;
-    const workflow = await getWorkflowResult(number, name, "patternfly-extension-testing", rejectedPromise);
-    console.log(workflow);
+    return getWorkflowResult(number, name, "patternfly-extension-testing", rejectedPromise);
   })
+
+  const resolvedResults = await Promise.all(results)
+  const output = resolvedResults.map((result, i) => ({ name: repos[i].name, status: result}));
+
+  console.log(output)
+  return output
 }
 
 const inter = Inter({ subsets: ["latin"] });
