@@ -1,11 +1,96 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import styles from "@/styles/Home.module.css";
+import { Octokit } from "octokit";
+import { useEffect } from "react";
 
-const inter = Inter({ subsets: ['latin'] })
+const octokit = new Octokit({
+  auth: process.env.TOKEN,
+});
+
+interface Bump {
+  name: string;
+  number: number;
+}
+
+async function getRepos(rej: () => void) {
+  const response = await octokit.request("GET /orgs/{owner}/repos", {
+    owner: "patternfly-extension-testing",
+  });
+
+  if (response.status !== 200) {
+    return rej();
+  }
+
+  const repos = response.data.filter((repo) => repo.name !== "dashboard");
+
+  return repos;
+}
+
+async function getBumpPR(repo: string, rej: () => void): Promise<Bump> {
+  const res = await octokit.request(
+    "GET /repos/patternfly-extension-testing/{repo}/pulls",
+    {
+      repo,
+    }
+  );
+
+  if (res.status !== 200) {
+    rej();
+  }
+
+  const pulls = res.data;
+  const bumpPull = pulls.find(
+    (pull) => pull.title === "chore(deps): update patternfly"
+  );
+
+  return { name: repo, number: bumpPull.number };
+}
+
+async function getWorkflowResult(
+  PRNumber: number,
+  repo: string,
+  owner: string = "patternfly-extension-testing",
+  rej: () => void
+) {
+  const res = await octokit.request("GET /repos/{owner}/{repo}/actions/runs", {
+    owner,
+    repo,
+    headers: {
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  });
+
+  if (res.status !== 200) {
+    rej();
+  }
+
+  const bumpRun = res.data.workflow_runs.find(run => (run.pull_requests[0].number as number) === PRNumber)
+  return bumpRun.status;
+}
+
+async function foo() {
+  const rejectedPromise = () => console.log("Promise rejected");
+
+  const repos = await getRepos(rejectedPromise);
+
+  repos.forEach(async repo => {
+    const bumpPR = await getBumpPR(repo.name, rejectedPromise);
+
+    const { name, number } = bumpPR;
+    const workflow = await getWorkflowResult(number, name, "patternfly-extension-testing", rejectedPromise);
+    console.log(workflow);
+  })
+}
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  useEffect(() => {
+    foo();
+  }, []);
+
   return (
     <>
       <Head>
@@ -26,7 +111,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              By{' '}
+              By{" "}
               <Image
                 src="/vercel.svg"
                 alt="Vercel Logo"
@@ -119,5 +204,5 @@ export default function Home() {
         </div>
       </main>
     </>
-  )
+  );
 }
