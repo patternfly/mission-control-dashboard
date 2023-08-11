@@ -19,7 +19,7 @@ export async function getWorkflowResult(
   }
 
   const { status } = res.data.workflow_runs.find(
-    (run) => (run.pull_requests[0].number as number) === PRNumber
+    (run) => (run.pull_requests[0]?.number as number) === PRNumber
   );
   return status;
 }

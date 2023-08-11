@@ -1,8 +1,9 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
-import { getStatus, Data } from "@/getters";
+import { Data } from "@/getters";
 import { Layout, StatusTable, StatusItem } from "@/app";
+import axios from "axios";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,17 +14,28 @@ export default function Home() {
   });
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  const refresh = () => getStatus().then((res) => setRepoStatuses(res));
+  const refresh = () =>
+    axios.get("/api/status").then((res) => setRepoStatuses(res.data));
+
   useEffect(() => {
     refresh();
   }, []);
 
-  const submit = () => {};
+  const syncRepos = () => {
+    selectedItems.forEach((repoName) => {
+      // syncRepo(repoName).then(res => console.log(res))
+      axios
+        .post("/api/sync", null, { params: { repo: repoName } })
+        .then((res) => console.log(res));
+    });
+    refresh();
+  };
 
-  const statusItems: StatusItem[] = repoStatuses.repos.map((repoName) => ({
-    name: repoName,
-    status: repoStatuses.statuses[repoName],
-  }));
+  const statusItems: StatusItem[] = repoStatuses.repos.map((repoName) => {
+    const { workflowStatus, syncStatus } = repoStatuses.statuses[repoName];
+
+    return { name: repoName, status: workflowStatus, syncStatus };
+  });
 
   return (
     <>
@@ -39,7 +51,7 @@ export default function Home() {
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
           refresh={refresh}
-          submit={submit}
+          submit={syncRepos}
         />
       </Layout>
     </>

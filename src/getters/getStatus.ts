@@ -1,7 +1,11 @@
-import { getRepos, getBumpPR, getWorkflowResult } from "./index";
+import { getRepos, getBumpPR, getWorkflowResult, getSyncStatus } from "./index";
 
+interface repoStatus {
+  workflowStatus: string;
+  syncStatus: boolean;
+}
 export type Statuses = {
-  [repo: string]: string;
+  [repo: string]: repoStatus;
 };
 
 export type Data = {
@@ -10,16 +14,23 @@ export type Data = {
 };
 
 export async function getStatus(
-  owner: string = 'patternfly-extension-testing'
+  owner: string = "patternfly-extension-testing"
 ): Promise<Data> {
   const repos = await getRepos(owner);
   const workflowResults = repos.map(async (repo) => {
     const bumpNumber = await getBumpPR(repo, owner);
+    const syncStatus = await getSyncStatus(repo, "main");
 
     if (bumpNumber) {
-      return getWorkflowResult(bumpNumber, repo, owner);
+      return {
+        workflowStatus: await getWorkflowResult(bumpNumber, repo, owner),
+        syncStatus,
+      };
     } else {
-      return "Error attempting to get status"
+      return {
+        workflowStatus: "Error attempting to get status",
+        syncStatus: false,
+      };
     }
   });
 
