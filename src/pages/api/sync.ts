@@ -4,16 +4,25 @@ import { getSyncStatus } from "@/getters";
 import { syncRepo } from "@/setters";
 
 type Data = {
-  status: string;
+  status: boolean;
 };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<any>
+  res: NextApiResponse<string>
 ) {
   const repoName = req.query.repo;
   const branch = req.query.branch;
   const owner = req.query.owner;
+
+  if (
+    typeof repoName !== "string" ||
+    typeof branch !== "string" ||
+    typeof owner === "object"
+  ) {
+    res.status(400).json(`ERROR: Invalid arguments`);
+    return;
+  }
 
   if (req.method === "GET") {
     const syncStatus = await getSyncStatus(repoName, branch, owner);

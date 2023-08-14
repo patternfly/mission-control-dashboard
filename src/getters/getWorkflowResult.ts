@@ -14,12 +14,23 @@ export async function getWorkflowResult(
   });
 
   if (res.status !== 200 || PRNumber === 0) {
-    console.log(res)
+    console.log(res);
     return "";
   }
 
-  const { status } = res.data.workflow_runs.find(
-    (run) => (run.pull_requests[0]?.number as number) === PRNumber
-  );
-  return status;
+  const triggerPR = res.data.workflow_runs.find((run) => {
+    const { pull_requests, status } = run;
+    if (pull_requests && status) {
+      const lastPR = pull_requests[0];
+
+      return lastPR?.number === PRNumber;
+    }
+    return false
+  });
+
+  if (triggerPR?.status) {
+    return triggerPR.status
+  }
+
+  return "";
 }

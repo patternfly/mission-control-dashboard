@@ -16,7 +16,7 @@ import "@patternfly/react-core/dist/styles/base.css";
 export interface StatusItem {
   name: string;
   status: string;
-  syncStatus: boolean;
+  syncStatus: string;
 }
 
 export interface StatusTableProps {
@@ -34,43 +34,9 @@ export const StatusTable: React.FunctionComponent<StatusTableProps> = ({
   refresh,
   submit,
 }: StatusTableProps) => {
-  const setRowSelected = (repoName: string, isSelecting = true) =>
-    setSelectedItems((prevSelected) => {
-      const otherSelectedRows = prevSelected.filter((r) => r !== repoName);
-      return isSelecting ? [...otherSelectedRows, repoName] : otherSelectedRows;
-    });
-  const selectAllRows = (isSelecting = true) =>
-    setSelectedItems(isSelecting ? statusItems.map((item) => item.name) : []);
-  const isRowSelected = (repoName) => selectedItems.includes(repoName);
-
-  const BulkSelectCheckbox = () => {
-    const numSelected = selectedItems.length;
-    const allSelected = numSelected === statusItems.length;
-    const anySelected = numSelected > 0;
-    const someChecked = anySelected ? null : false;
-    const isChecked = allSelected ? true : someChecked;
-
-    return (
-      <Checkbox
-        id="split-dropdown-checkbox"
-        key="split-dropdown-checkbox"
-        aria-label={anySelected ? "Deselect all cards" : "Select all cards"}
-        isChecked={isChecked}
-        onClick={() => {
-          anySelected ? setSelectedItems([]) : selectAllRows();
-        }}
-      />
-    );
-  };
-
   const toolbar = (
     <Toolbar>
       <ToolbarContent>
-        <ToolbarGroup>
-          <ToolbarItem variant="bulk-select">
-            <BulkSelectCheckbox />
-          </ToolbarItem>
-        </ToolbarGroup>
         <ToolbarGroup align={{ default: "alignRight" }}>
           <ToolbarItem>
             <Button variant="secondary" onClick={() => refresh()}>
@@ -78,7 +44,7 @@ export const StatusTable: React.FunctionComponent<StatusTableProps> = ({
             </Button>
           </ToolbarItem>
           <ToolbarItem>
-            <Button onClick={submit}>Resync selected repos</Button>
+            <Button onClick={submit}>Resync repos</Button>
           </ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>
@@ -93,7 +59,6 @@ export const StatusTable: React.FunctionComponent<StatusTableProps> = ({
       <Table aria-label="Selectable table">
         <Thead>
           <Tr>
-            <Th />
             {columns.map((column) => (
               <Th key={column}>{column}</Th>
             ))}
@@ -102,14 +67,6 @@ export const StatusTable: React.FunctionComponent<StatusTableProps> = ({
         <Tbody>
           {statusItems.map((item, rowIndex) => (
             <Tr key={item.name}>
-              <Td
-                select={{
-                  rowIndex,
-                  onSelect: (_event, isSelecting) =>
-                    setRowSelected(item.name, isSelecting),
-                  isSelected: isRowSelected(item.name),
-                }}
-              />
               <Td dataLabel={columns[0]} width={30}>
                 {item.name}
               </Td>

@@ -4,7 +4,7 @@ export async function getSyncStatus(
   repo: string,
   branch: string,
   owner: string = "patternfly-extension-testing"
-): Promise<number | boolean> {
+): Promise<string> {
   const res = await octokit.request(
     "GET /repos/{owner}/{repo}/branches/{branch}",
     {
@@ -18,19 +18,8 @@ export async function getSyncStatus(
   );
   if (res.status !== 200) {
     console.log(res);
-    return false;
+    return `ERROR: status code: ${res.status}`;
   }
-
-  // const pulls = res.data;
-  // const bumpPull = pulls.find(
-  //   (pull) => pull.title === "chore(deps): update patternfly"
-  // );
-
-  // if (bumpPull) {
-  //   return bumpPull.number;
-  // } else {
-  //   return 0;
-  // }
 
   const parentCommitSHAs = res.data.commit.parents.map(commit => commit.sha)
 
@@ -48,5 +37,7 @@ export async function getSyncStatus(
 
   const upstreamHeadCommit = upstreamRes.data.commit;
 
-  return parentCommitSHAs.some(sha => sha === upstreamHeadCommit.sha)
+  const isSynced = parentCommitSHAs.some(sha => sha === upstreamHeadCommit.sha);
+
+  return isSynced ? 'synced' : 'sync required'
 }

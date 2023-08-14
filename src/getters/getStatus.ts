@@ -2,7 +2,7 @@ import { getRepos, getBumpPR, getWorkflowResult, getSyncStatus } from "./index";
 
 interface repoStatus {
   workflowStatus: string;
-  syncStatus: boolean;
+  syncStatus: string;
 }
 export type Statuses = {
   [repo: string]: repoStatus;
@@ -29,7 +29,7 @@ export async function getStatus(
     } else {
       return {
         workflowStatus: "Error attempting to get status",
-        syncStatus: false,
+        syncStatus: "Error attempting to get sync status",
       };
     }
   });

@@ -22,13 +22,15 @@ export default function Home() {
   }, []);
 
   const syncRepos = () => {
-    selectedItems.forEach((repoName) => {
-      // syncRepo(repoName).then(res => console.log(res))
-      axios
-        .post("/api/sync", null, { params: { repo: repoName } })
-        .then((res) => console.log(res));
+    repoStatuses.repos.forEach((repo) => {
+      const { syncStatus } = repoStatuses.statuses[repo];
+      if (!syncStatus) {
+        axios
+          .post("/api/sync", null, { params: { repo } })
+          .then((res) => console.log(res));
+      }
     });
-    refresh();
+    setTimeout(() => refresh(), 2000);
   };
 
   const statusItems: StatusItem[] = repoStatuses.repos.map((repoName) => {

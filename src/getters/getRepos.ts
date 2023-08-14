@@ -12,7 +12,7 @@ export async function getRepos(
     return [];
   }
 
-  const repos = response.data.filter((repo) => repo.name !== "dashboard");
+  const repos = response.data.filter((repo: any) => repo.name !== "dashboard");
 
-  return repos.map((repo) => repo.name);
+  return repos.map((repo: any) => repo.name);
 }
