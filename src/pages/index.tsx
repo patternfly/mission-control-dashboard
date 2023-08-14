@@ -26,7 +26,7 @@ export default function Home() {
       const { syncStatus } = repoStatuses.statuses[repo];
       if (syncStatus !== 'synced') {
         axios
-          .post("/api/sync", null, { params: { repo } })
+          .post("/api/sync", null, { params: { repo, branch: 'main' } })
           .then((res) => console.log(res));
       }
     });
