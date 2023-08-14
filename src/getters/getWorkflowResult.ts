@@ -25,11 +25,13 @@ export async function getWorkflowResult(
 
       return lastPR?.number === PRNumber;
     }
-    return false
+    return false;
   });
 
-  if (triggerPR?.status) {
-    return triggerPR.status
+  if (triggerPR?.conclusion) {
+    return triggerPR.conclusion;
+  } else if (triggerPR?.status) {
+    return triggerPR.status;
   }
 
   return "";
