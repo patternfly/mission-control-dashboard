@@ -24,7 +24,7 @@ export default function Home() {
   const syncRepos = () => {
     repoStatuses.repos.forEach((repo) => {
       const { syncStatus } = repoStatuses.statuses[repo];
-      if (!syncStatus) {
+      if (syncStatus !== 'synced') {
         axios
           .post("/api/sync", null, { params: { repo } })
           .then((res) => console.log(res));
