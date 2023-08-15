@@ -1,9 +1,4 @@
 import octokit from "../octokit";
-// import { Octokit } from "octokit";
-
-// const octokit = new Octokit({
-//   auth: process.env.GH_TOKEN,
-// });
 
 export async function syncRepo(
   repo: string,

@@ -24,11 +24,20 @@ export default function Home() {
   const syncRepos = () => {
     repoStatuses.repos.forEach((repo) => {
       const { syncStatus } = repoStatuses.statuses[repo];
-      if (syncStatus !== 'synced') {
+      if (syncStatus !== "synced") {
         axios
-          .post("/api/sync", null, { params: { repo, branch: 'main' } })
+          .post("/api/sync", null, { params: { repo, branch: "main" } })
           .then((res) => console.log(res));
       }
+    });
+    setTimeout(() => refresh(), 2000);
+  };
+
+  const renewBumps = () => {
+    repoStatuses.repos.forEach((repo) => {
+      axios
+        .post("/api/close", null, { params: { repo } })
+        .then((res) => console.log(res));
     });
     setTimeout(() => refresh(), 2000);
   };
@@ -54,6 +63,7 @@ export default function Home() {
           setSelectedItems={setSelectedItems}
           refresh={refresh}
           submit={syncRepos}
+          renewBumps={renewBumps}
         />
       </Layout>
     </>

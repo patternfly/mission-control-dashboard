@@ -25,6 +25,7 @@ export interface StatusTableProps {
   setSelectedItems: (selectedItems: string[]) => void;
   refresh: () => void;
   submit: () => void;
+  renewBumps: () => void;
 }
 
 export const StatusTable: React.FunctionComponent<StatusTableProps> = ({
@@ -33,15 +34,19 @@ export const StatusTable: React.FunctionComponent<StatusTableProps> = ({
   setSelectedItems,
   refresh,
   submit,
+  renewBumps
 }: StatusTableProps) => {
   const toolbar = (
     <Toolbar>
       <ToolbarContent>
         <ToolbarGroup align={{ default: "alignRight" }}>
           <ToolbarItem>
-            <Button variant="secondary" onClick={() => refresh()}>
+            <Button variant="tertiary" onClick={() => refresh()}>
               Refresh
             </Button>
+          </ToolbarItem>
+          <ToolbarItem>
+            <Button variant='secondary' onClick={renewBumps}>Renew bump PRs</Button>
           </ToolbarItem>
           <ToolbarItem>
             <Button onClick={submit}>Resync repos</Button>
