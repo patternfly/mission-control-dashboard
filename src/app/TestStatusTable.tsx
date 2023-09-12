@@ -2,7 +2,6 @@ import React from "react";
 
 import {
   Button,
-  Checkbox,
   PageSection,
   Toolbar,
   ToolbarContent,
@@ -13,29 +12,25 @@ import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 
 import "@patternfly/react-core/dist/styles/base.css";
 
-export interface StatusItem {
+export interface TestStatusItem {
   name: string;
   status: string;
   syncStatus: string;
 }
 
-export interface StatusTableProps {
-  statusItems: StatusItem[];
-  selectedItems: string[];
-  setSelectedItems: (selectedItems: string[]) => void;
+export interface TestStatusTableProps {
+  statusItems: TestStatusItem[];
   refresh: () => void;
   submit: () => void;
   renewBumps: () => void;
 }
 
-export const StatusTable: React.FunctionComponent<StatusTableProps> = ({
+export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
   statusItems,
-  selectedItems,
-  setSelectedItems,
   refresh,
   submit,
   renewBumps
-}: StatusTableProps) => {
+}: TestStatusTableProps) => {
   const toolbar = (
     <Toolbar>
       <ToolbarContent>
@@ -61,7 +56,7 @@ export const StatusTable: React.FunctionComponent<StatusTableProps> = ({
   return (
     <PageSection isWidthLimited>
       {toolbar}
-      <Table aria-label="Selectable table">
+      <Table aria-label="Testing status of various repos using the latest patternfly test candidates">
         <Thead>
           <Tr>
             {columns.map((column) => (
