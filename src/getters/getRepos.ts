@@ -3,9 +3,14 @@ import octokit from "../octokit";
 export async function getRepos(
   owner: string = "patternfly-extension-testing"
 ): Promise<string[]> {
-  const response = await octokit.request("GET /orgs/{owner}/repos", {
-    owner,
-  });
+  const response = await octokit
+    .request("GET /orgs/{owner}/repos", {
+      owner,
+    })
+    .catch((err) => {
+      console.error(err);
+      return { status: err.status, data: []};
+    });
 
   if (response.status !== 200) {
     console.log(response);

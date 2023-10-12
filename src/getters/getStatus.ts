@@ -20,18 +20,12 @@ export async function getStatus(
   const workflowResults = repos.map(async (repo) => {
     const bumpNumber = await getBumpPR(repo, owner);
     const syncStatus = await getSyncStatus(repo, "main");
+    const workflowStatus = await getWorkflowResult(bumpNumber, repo, owner);
 
-    if (bumpNumber) {
-      return {
-        workflowStatus: await getWorkflowResult(bumpNumber, repo, owner),
-        syncStatus,
-      };
-    } else {
-      return {
-        workflowStatus: "Error attempting to get status",
-        syncStatus: "Error attempting to get sync status",
-      };
-    }
+    return {
+      workflowStatus,
+      syncStatus,
+    };
   });
 
   const resolvedWorkflowResults = await Promise.all(workflowResults);
