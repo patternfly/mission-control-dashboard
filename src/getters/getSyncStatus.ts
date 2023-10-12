@@ -1,4 +1,5 @@
 import octokit from "../octokit";
+import { getUpstreamOwner } from "./getUpstreamOwner";
 
 export async function getSyncStatus(
   repo: string,
@@ -26,9 +27,12 @@ export async function getSyncStatus(
 
   const parentCommitSHAs = res.data.commit.parents.map((commit) => commit.sha);
 
-  const upstreamRes = await octokit
-    .request("GET /repos/{owner}/{repo}/branches/{branch}", {
-      owner: "patternfly",
+  const upstreamOwner = await getUpstreamOwner(owner, repo);
+
+  const upstreamRes = await octokit.request(
+    "GET /repos/{owner}/{repo}/branches/{branch}",
+    {
+      owner: upstreamOwner || owner,
       repo,
       branch,
       headers: {

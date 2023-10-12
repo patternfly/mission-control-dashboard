@@ -21,7 +21,7 @@ export async function getBumpPR(
 
   const pulls = res.data;
   const bumpPull = pulls.find(
-    (pull) => pull.title === "chore(deps): update patternfly"
+    (pull) => pull.title.toLowerCase().includes('update patternfly')
   );
 
   if (bumpPull) {
