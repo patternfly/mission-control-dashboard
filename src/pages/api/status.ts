@@ -9,19 +9,18 @@ export default async function handler(
   const owner = req.query.owner;
 
   if (typeof owner === "string" || !owner) {
-    const output = await getStatus(owner);
-    res.status(200).json(output);
+    getStatus(owner)
+      .then((output) => res.status(200).json(output))
+      .catch((error) => res.status(400).json(error));
   } else {
-    res
-      .status(400)
-      .json({
-        repos: ["ERROR"],
-        statuses: {
-          repo: {
-            workflowStatus: "ERROR owner must be of type string if passed",
-            syncStatus: "ERROR owner must be of type string if passed",
-          }
+    res.status(400).json({
+      repos: ["ERROR"],
+      statuses: {
+        repo: {
+          workflowStatus: "ERROR owner must be of type string if passed",
+          syncStatus: "ERROR owner must be of type string if passed",
         },
-      });
+      },
+    });
   }
 }
