@@ -9,6 +9,8 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
+import { useSession } from "next-auth/react";
+import { LoginButton } from "../components";
 
 import "@patternfly/react-core/dist/styles/base.css";
 
@@ -29,24 +31,40 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
   statusItems,
   refresh,
   submit,
-  renewBumps
+  renewBumps,
 }: TestStatusTableProps) => {
+  const { data: session } = useSession();
+
+  const adminEmails = ["wise.king.sullyman@gmail.com"];
+  const adminAuthenticated = adminEmails.includes(session?.user?.email || "");
+
+  const adminControlButtons = (
+    <>
+      <ToolbarItem>
+        <Button variant="tertiary" onClick={() => refresh()}>
+          Refresh
+        </Button>
+      </ToolbarItem>
+      <ToolbarItem>
+        <Button variant="secondary" onClick={renewBumps}>
+          Renew bump PRs
+        </Button>
+      </ToolbarItem>
+      <ToolbarItem>
+        <Button onClick={submit}>Resync repos</Button>
+      </ToolbarItem>
+    </>
+  );
+
   const toolbar = (
     <Toolbar>
       <ToolbarContent>
         <ToolbarGroup align={{ default: "alignRight" }}>
-          <ToolbarItem>
-            <Button variant="tertiary" onClick={() => refresh()}>
-              Refresh
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button variant='secondary' onClick={renewBumps}>Renew bump PRs</Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button onClick={submit}>Resync repos</Button>
-          </ToolbarItem>
+          {adminAuthenticated && adminControlButtons}
         </ToolbarGroup>
+        <ToolbarItem>
+          <LoginButton />
+        </ToolbarItem>
       </ToolbarContent>
     </Toolbar>
   );
