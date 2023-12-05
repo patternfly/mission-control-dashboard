@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Data } from "@/getters";
 import { Layout, TestStatusTable, TestStatusItem } from "@/app";
 import axios from "axios";
-import {ReleaseStatusTable} from "@/app/ReleaseStatusTable";
+import { ReleaseStatusTable } from "@/app/ReleaseStatusTable";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,9 +43,9 @@ export default function Home() {
   };
 
   const statusItems: TestStatusItem[] = repoStatuses.repos.map((repoName) => {
-    const { workflowStatus, syncStatus } = repoStatuses.statuses[repoName];
+    const { workflowStatus, ...data } = repoStatuses.statuses[repoName];
 
-    return { name: repoName, status: workflowStatus, syncStatus };
+    return { name: repoName, status: workflowStatus, ...data };
   });
 
   return (
