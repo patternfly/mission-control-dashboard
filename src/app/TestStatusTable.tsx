@@ -9,15 +9,15 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
+import { repoStatus } from "@/getters";
 import { useSession } from "next-auth/react";
 import { LoginButton } from "../components";
 
 import "@patternfly/react-core/dist/styles/base.css";
 
-export interface TestStatusItem {
+export interface TestStatusItem extends Omit<repoStatus, "workflowStatus"> {
   name: string;
   status: string;
-  syncStatus: string;
 }
 
 export interface TestStatusTableProps {
@@ -86,10 +86,10 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
           {statusItems.map((item, rowIndex) => (
             <Tr key={item.name}>
               <Td dataLabel={columns[0]} width={30}>
-                {item.name}
+                {<a href={item.upstreamOwnerLink} aria-label={`upstream repo ${item.name}`}>{item.name}</a>}
               </Td>
               <Td dataLabel={columns[1]} width={30}>
-                {item.status}
+                {<a href={item.bumpPRLink} aria-label={`dependency bump PR, status ${item.status}`}>{item.status}</a>}
               </Td>
               <Td dataLabel={columns[1]} width={40}>
                 {item.syncStatus.toString()}

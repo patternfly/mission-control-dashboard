@@ -19,6 +19,8 @@ export default async function handler(
         repo: {
           workflowStatus: "ERROR owner must be of type string if passed",
           syncStatus: "ERROR owner must be of type string if passed",
+          bumpPRLink: "ERROR owner must be of type string if passed",
+          upstreamOwnerLink: "ERROR owner must be of type string if passed",
         },
       },
     });
