@@ -35,7 +35,7 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
 }: TestStatusTableProps) => {
   const { data: session } = useSession();
 
-  const adminEmails = ["wise.king.sullyman@gmail.com"];
+  const adminEmails = ["wise.king.sullyman@gmail.com", "dlabaj@redhat.com", "nthoen@redhat.com"];
   const adminAuthenticated = adminEmails.includes(session?.user?.email || "");
 
   const adminControlButtons = (
