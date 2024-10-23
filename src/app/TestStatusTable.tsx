@@ -2,7 +2,9 @@ import React from "react";
 
 import {
   Button,
+  Icon,
   PageSection,
+  ToggleGroupItem,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -11,9 +13,10 @@ import {
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { repoStatus } from "@/getters";
 import { useSession } from "next-auth/react";
+import { MoonIcon, SunIcon } from '@patternfly/react-icons';
 import { LoginButton } from "../components";
 
-import "@patternfly/react-core/dist/styles/base.css";
+import "@patternfly/patternfly/patternfly.css";
 
 export interface TestStatusItem extends Omit<repoStatus, "workflowStatus"> {
   name: string;
@@ -37,6 +40,16 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
 
   const adminEmails = ["wise.king.sullyman@gmail.com", "dlabaj@redhat.com", "nthoen@redhat.com"];
   const adminAuthenticated = adminEmails.includes(session?.user?.email || "");
+  const [isDarkTheme, setIsDarkTheme] = React.useState(false);
+
+  const toggleDarkTheme = (_evt: any, selected: any) => {
+    const darkThemeToggleClicked = !selected === isDarkTheme;
+    const htmlElement = document.querySelector('html');
+    if (htmlElement) {
+      htmlElement.classList.toggle('pf-v6-theme-dark', darkThemeToggleClicked);
+    }
+    setIsDarkTheme(darkThemeToggleClicked);
+  };
 
   const adminControlButtons = (
     <>
@@ -62,6 +75,12 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
         <ToolbarGroup align={{ default: "alignEnd" }}>
           {adminAuthenticated && adminControlButtons}
         </ToolbarGroup>
+        <ToolbarItem>
+          <ToolbarGroup>
+            <ToggleGroupItem aria-label="light theme toggle" icon={<Icon size="md"><SunIcon /></Icon>} isSelected={!isDarkTheme} onChange={toggleDarkTheme} />
+            <ToggleGroupItem aria-label="dark theme toggle" icon={<Icon size="md"><MoonIcon /></Icon>} isSelected={isDarkTheme} onChange={toggleDarkTheme} />
+          </ToolbarGroup>
+        </ToolbarItem>
         <ToolbarItem>
           <LoginButton />
         </ToolbarItem>
