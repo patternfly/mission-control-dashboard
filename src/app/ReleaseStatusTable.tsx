@@ -59,7 +59,7 @@ export const ReleaseStatusTable: React.FunctionComponent = () => {
   ];
 
   return (
-    <PageSection isWidthLimited>
+    <PageSection hasBodyWrapper isWidthLimited>
       <Table aria-label="Release status of patternfly packages">
         <Thead>
           <Tr>

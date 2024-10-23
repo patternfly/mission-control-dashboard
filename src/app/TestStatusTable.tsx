@@ -59,7 +59,7 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
   const toolbar = (
     <Toolbar>
       <ToolbarContent>
-        <ToolbarGroup align={{ default: "alignRight" }}>
+        <ToolbarGroup align={{ default: "alignEnd" }}>
           {adminAuthenticated && adminControlButtons}
         </ToolbarGroup>
         <ToolbarItem>
@@ -72,7 +72,7 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
   const columns = ["Name", "Status", "Synced with upstream?"];
 
   return (
-    <PageSection isWidthLimited>
+    <PageSection hasBodyWrapper isWidthLimited>
       {toolbar}
       <Table aria-label="Testing status of various repos using the latest patternfly test candidates">
         <Thead>
