@@ -17,6 +17,7 @@
 
 # misc
 .DS_Store
+.history
 *.pem
 
 # debug
@@ -26,7 +27,9 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
+.cache*
 .env*.local
+.yarn*
 
 # vercel
 .vercel
