@@ -24,6 +24,6 @@
     "axios": "^1.4.0",
     "@patternfly/react-core": "^5.0.1",
     "@patternfly/react-styles": "^5.0.1",
-    "@patternfly/react-table": "^5.0.1"
+    "@patternfly/react-table": "^5.4.11"
   }
 }
