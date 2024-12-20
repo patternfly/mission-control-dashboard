@@ -22,7 +22,7 @@
     "react-dom": "18.2.0",
     "typescript": "4.9.5",
     "axios": "^1.4.0",
-    "@patternfly/react-core": "^5.0.1",
+    "@patternfly/react-core": "^5.4.10",
     "@patternfly/react-styles": "^5.0.1",
     "@patternfly/react-table": "^5.0.1"
   }
