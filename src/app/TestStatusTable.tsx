@@ -3,14 +3,17 @@ import React from "react";
 import {
   Button,
   PageSection,
+  ToggleGroupItem,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  ToggleGroup,
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { repoStatus } from "@/getters";
 import { useSession } from "next-auth/react";
+import { MoonIcon, SunIcon } from '@patternfly/react-icons';
 import { LoginButton } from "../components";
 
 import "@patternfly/react-core/dist/styles/base.css";
@@ -37,6 +40,16 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
 
   const adminEmails = ["wise.king.sullyman@gmail.com", "dlabaj@redhat.com", "nthoen@redhat.com"];
   const adminAuthenticated = adminEmails.includes(session?.user?.email || "");
+  const [isDarkTheme, setIsDarkTheme] = React.useState(false);
+
+  const toggleDarkTheme = (_evt: any, selected: any) => {
+    const darkThemeToggleClicked = !selected === isDarkTheme;
+    const htmlElement = document.querySelector('html');
+    if (htmlElement) {
+      htmlElement.classList.toggle('pf-v6-theme-dark', darkThemeToggleClicked);
+    }
+    setIsDarkTheme(darkThemeToggleClicked);
+  };
 
   const adminControlButtons = (
     <>
@@ -59,9 +72,15 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
   const toolbar = (
     <Toolbar>
       <ToolbarContent>
-        <ToolbarGroup align={{ default: "alignRight" }}>
+        <ToolbarGroup align={{ default: "alignEnd" }}>
           {adminAuthenticated && adminControlButtons}
         </ToolbarGroup>
+        <ToolbarItem>
+          <ToggleGroup>
+            <ToggleGroupItem aria-label="light theme toggle" icon={<SunIcon />} isSelected={!isDarkTheme} onChange={toggleDarkTheme} />
+            <ToggleGroupItem aria-label="dark theme toggle" icon={<MoonIcon />} isSelected={isDarkTheme} onChange={toggleDarkTheme} />
+          </ToggleGroup>
+        </ToolbarItem>
         <ToolbarItem>
           <LoginButton />
         </ToolbarItem>
