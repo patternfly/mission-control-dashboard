@@ -2,13 +2,13 @@ import React from "react";
 
 import {
   Button,
-  Icon,
   PageSection,
   ToggleGroupItem,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  ToggleGroup,
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { repoStatus } from "@/getters";
@@ -16,7 +16,7 @@ import { useSession } from "next-auth/react";
 import { MoonIcon, SunIcon } from '@patternfly/react-icons';
 import { LoginButton } from "../components";
 
-import "@patternfly/patternfly/patternfly.css";
+import "@patternfly/react-core/dist/styles/base.css";
 
 export interface TestStatusItem extends Omit<repoStatus, "workflowStatus"> {
   name: string;
@@ -76,10 +76,10 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
           {adminAuthenticated && adminControlButtons}
         </ToolbarGroup>
         <ToolbarItem>
-          <ToolbarGroup>
-            <ToggleGroupItem aria-label="light theme toggle" icon={<Icon size="md"><SunIcon /></Icon>} isSelected={!isDarkTheme} onChange={toggleDarkTheme} />
-            <ToggleGroupItem aria-label="dark theme toggle" icon={<Icon size="md"><MoonIcon /></Icon>} isSelected={isDarkTheme} onChange={toggleDarkTheme} />
-          </ToolbarGroup>
+          <ToggleGroup>
+            <ToggleGroupItem aria-label="light theme toggle" icon={<SunIcon />} isSelected={!isDarkTheme} onChange={toggleDarkTheme} />
+            <ToggleGroupItem aria-label="dark theme toggle" icon={<MoonIcon />} isSelected={isDarkTheme} onChange={toggleDarkTheme} />
+          </ToggleGroup>
         </ToolbarItem>
         <ToolbarItem>
           <LoginButton />
@@ -91,7 +91,7 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
   const columns = ["Name", "Status", "Synced with upstream?"];
 
   return (
-    <PageSection hasBodyWrapper isWidthLimited>
+    <PageSection isWidthLimited>
       {toolbar}
       <Table aria-label="Testing status of various repos using the latest patternfly test candidates">
         <Thead>
