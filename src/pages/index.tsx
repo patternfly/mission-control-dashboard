@@ -2,9 +2,10 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import { Data } from "@/getters";
-import { Layout, TestStatusTable, TestStatusItem } from "@/app";
+import { TestStatusTable, TestStatusItem } from "@/app";
 import axios from "axios";
 import { ReleaseStatusTable } from "@/app/ReleaseStatusTable";
+import Layout from "@/app/layout";
 
 const inter = Inter({ subsets: ["latin"] });
 

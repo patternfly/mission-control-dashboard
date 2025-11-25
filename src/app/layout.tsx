@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { Inter } from "next/font/google";
 import '@patternfly/react-core/dist/styles/base.css';
 import { Page } from "@patternfly/react-core";
@@ -9,10 +8,14 @@ interface LayoutProps {
   children: React.ReactNode
 }
 
-export function Layout({ children }: LayoutProps): JSX.Element {
+export default function RootLayout({ children }: LayoutProps): JSX.Element {
   return (
-      <Page>
-        {children}
-      </Page>
+    <html lang="en">
+      <body className={inter.className}>
+        <Page>
+          {children}
+        </Page>
+      </body>
+    </html>
   );
 }
