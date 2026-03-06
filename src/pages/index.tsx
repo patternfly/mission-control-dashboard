@@ -6,6 +6,7 @@ import { TestStatusTable, TestStatusItem } from "@/app";
 import axios from "axios";
 import { ReleaseStatusTable } from "@/app/ReleaseStatusTable";
 import Layout from "@/app/layout";
+import { PageSection, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,25 +23,22 @@ export default function Home() {
     refresh();
   }, []);
 
-  const syncRepos = () => {
-    repoStatuses.repos.forEach((repo) => {
-      const { syncStatus } = repoStatuses.statuses[repo];
-      if (syncStatus !== "synced") {
-        axios
-          .post("/api/sync", null, { params: { repo, branch: "main" } })
-          .then((res) => console.log(res));
-      }
-    });
-    setTimeout(() => refresh(), 2000);
+  const syncRepos = async () => {
+    const promises = repoStatuses.repos
+      .filter((repo) => repoStatuses.statuses[repo].syncStatus !== "synced")
+      .map((repo) =>
+        axios.post("/api/sync", null, { params: { repo, branch: "main" } })
+      );
+    await Promise.all(promises);
+    await refresh();
   };
 
-  const renewBumps = () => {
-    repoStatuses.repos.forEach((repo) => {
-      axios
-        .post("/api/close", null, { params: { repo } })
-        .then((res) => console.log(res));
-    });
-    setTimeout(() => refresh(), 2000);
+  const renewBumps = async () => {
+    const promises = repoStatuses.repos.map((repo) =>
+      axios.post("/api/close", null, { params: { repo } })
+    );
+    await Promise.all(promises);
+    await refresh();
   };
 
   const statusItems: TestStatusItem[] = repoStatuses.repos.map((repoName) => {
@@ -48,6 +46,8 @@ export default function Home() {
 
     return { name: repoName, status: workflowStatus, ...data };
   });
+
+  const [activeTabKey, setActiveTabKey] = useState<string | number>(0);
 
   return (
     <>
@@ -58,13 +58,21 @@ export default function Home() {
         <link rel="icon" href="/Favicon-Light.png" />
       </Head>
       <Layout>
-        <TestStatusTable
-          statusItems={statusItems}
-          refresh={refresh}
-          submit={syncRepos}
-          renewBumps={renewBumps}
-        />
-        <ReleaseStatusTable />
+        <PageSection type="tabs">
+          <Tabs activeKey={activeTabKey} onSelect={(_evt, key) => setActiveTabKey(key)}>
+            <Tab eventKey={0} title={<TabTitleText>Test Status</TabTitleText>}>
+              <TestStatusTable
+                statusItems={statusItems}
+                refresh={refresh}
+                submit={syncRepos}
+                renewBumps={renewBumps}
+              />
+            </Tab>
+            <Tab eventKey={1} title={<TabTitleText>Release Status</TabTitleText>}>
+              <ReleaseStatusTable />
+            </Tab>
+          </Tabs>
+        </PageSection>
       </Layout>
     </>
   );
