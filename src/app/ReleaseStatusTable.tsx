@@ -55,6 +55,10 @@ export const ReleaseStatusTable: React.FunctionComponent = () => {
       name: "react-catalog-view",
       statusSVG: "https://github.com/patternfly/react-catalog-view/actions/workflows/release.yml/badge.svg",
       repoLink: "https://github.com/patternfly/react-catalog-view/actions"
+    },{
+      name: "chatbot",
+      statusSVG: "https://github.com/patternfly/chatbot/actions/workflows/release.yml/badge.svg",
+      repoLink: "https://github.com/patternfly/chatbot/actions"
     },
   ];
 
@@ -75,6 +79,7 @@ export const ReleaseStatusTable: React.FunctionComponent = () => {
                 <a href={item.repoLink} target="_blank">{item.name}</a>
               </Td>
               <Td dataLabel={columns[1]} width={30}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={item.statusSVG} alt={`Release status for ${item.name}`} />
               </Td>
             </Tr>

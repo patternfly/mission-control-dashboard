@@ -3,18 +3,14 @@ import React from "react";
 import {
   Button,
   PageSection,
-  ToggleGroupItem,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  ToggleGroup,
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import { repoStatus } from "@/getters";
 import { useSession } from "next-auth/react";
-import { MoonIcon, SunIcon } from '@patternfly/react-icons';
-import { LoginButton } from "../components";
 
 import "@patternfly/react-core/dist/styles/base.css";
 
@@ -25,9 +21,9 @@ export interface TestStatusItem extends Omit<repoStatus, "workflowStatus"> {
 
 export interface TestStatusTableProps {
   statusItems: TestStatusItem[];
-  refresh: () => void;
-  submit: () => void;
-  renewBumps: () => void;
+  refresh: () => Promise<void>;
+  submit: () => Promise<void>;
+  renewBumps: () => Promise<void>;
 }
 
 export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
@@ -40,53 +36,71 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
 
   const adminEmails = ["wise.king.sullyman@gmail.com", "dlabaj@redhat.com", "nthoen@redhat.com"];
   const adminAuthenticated = adminEmails.includes(session?.user?.email || "");
-  const [isDarkTheme, setIsDarkTheme] = React.useState(false);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [isRenewing, setIsRenewing] = React.useState(false);
+  const [isSyncing, setIsSyncing] = React.useState(false);
 
-  const toggleDarkTheme = (_evt: any, selected: any) => {
-    const darkThemeToggleClicked = !selected === isDarkTheme;
-    const htmlElement = document.querySelector('html');
-    if (htmlElement) {
-      htmlElement.classList.toggle('pf-v6-theme-dark', darkThemeToggleClicked);
-    }
-    setIsDarkTheme(darkThemeToggleClicked);
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    refresh().finally(() => setIsRefreshing(false));
+  };
+
+  const handleRenewBumps = () => {
+    setIsRenewing(true);
+    renewBumps().finally(() => setIsRenewing(false));
+  };
+
+  const handleSync = () => {
+    setIsSyncing(true);
+    submit().finally(() => setIsSyncing(false));
   };
 
   const adminControlButtons = (
     <>
       <ToolbarItem>
-        <Button variant="tertiary" onClick={() => refresh()}>
-          Refresh
+        <Button
+          variant="tertiary"
+          onClick={handleRefresh}
+          isLoading={isRefreshing}
+          isDisabled={isRefreshing}
+          spinnerAriaValueText="Refreshing"
+        >
+          {isRefreshing ? "Refreshing" : "Refresh"}
         </Button>
       </ToolbarItem>
       <ToolbarItem>
-        <Button variant="secondary" onClick={renewBumps}>
-          Renew bump PRs
+        <Button
+          variant="secondary"
+          onClick={handleRenewBumps}
+          isLoading={isRenewing}
+          isDisabled={isRenewing}
+          spinnerAriaValueText="Renewing"
+        >
+          {isRenewing ? "Renewing bump PRs" : "Renew bump PRs"}
         </Button>
       </ToolbarItem>
       <ToolbarItem>
-        <Button onClick={submit}>Resync repos</Button>
+        <Button
+          onClick={handleSync}
+          isLoading={isSyncing}
+          isDisabled={isSyncing}
+          spinnerAriaValueText="Syncing"
+        >
+          {isSyncing ? "Syncing repos" : "Resync repos"}
+        </Button>
       </ToolbarItem>
     </>
   );
 
-  const toolbar = (
+  const toolbar = adminAuthenticated ? (
     <Toolbar>
       <ToolbarContent>
         <ToolbarGroup align={{ default: "alignEnd" }}>
-          {adminAuthenticated && adminControlButtons}
+          {adminControlButtons}
         </ToolbarGroup>
-        <ToolbarItem>
-          <ToggleGroup>
-            <ToggleGroupItem aria-label="light theme toggle" icon={<SunIcon />} isSelected={!isDarkTheme} onChange={toggleDarkTheme} />
-            <ToggleGroupItem aria-label="dark theme toggle" icon={<MoonIcon />} isSelected={isDarkTheme} onChange={toggleDarkTheme} />
-          </ToggleGroup>
-        </ToolbarItem>
-        <ToolbarItem>
-          <LoginButton />
-        </ToolbarItem>
       </ToolbarContent>
     </Toolbar>
-  );
+  ) : null;
 
   const columns = ["Name", "Status", "Synced with upstream?"];
 
