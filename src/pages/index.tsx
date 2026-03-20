@@ -15,9 +15,18 @@ export default function Home() {
     repos: [],
     statuses: {},
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
-  const refresh = () =>
-    axios.get("/api/status").then((res) => setRepoStatuses(res.data));
+  const refresh = () => {
+    setIsLoading(true);
+    setHasError(false);
+    return axios
+      .get("/api/status")
+      .then((res) => setRepoStatuses(res.data))
+      .catch(() => setHasError(true))
+      .finally(() => setIsLoading(false));
+  };
 
   useEffect(() => {
     refresh();
@@ -63,6 +72,8 @@ export default function Home() {
             <Tab eventKey={0} title={<TabTitleText>Test Status</TabTitleText>}>
               <TestStatusTable
                 statusItems={statusItems}
+                isLoading={isLoading}
+                hasError={hasError}
                 refresh={refresh}
                 submit={syncRepos}
                 renewBumps={renewBumps}
