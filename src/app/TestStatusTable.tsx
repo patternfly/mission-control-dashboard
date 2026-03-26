@@ -118,7 +118,7 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
     return (
       <PageSection isWidthLimited>
         {toolbar}
-        <SkeletonTable rowsCount={5} columns={columns} />
+        <SkeletonTable rowsCount={statusItems.length || 8} columns={columns} />
       </PageSection>
     );
   }
