@@ -4,6 +4,7 @@ import {
   getWorkflowResult,
   getSyncStatus,
   getUpstreamOwner,
+  getPreviewUrl,
 } from "./index";
 
 export interface repoStatus {
@@ -11,6 +12,7 @@ export interface repoStatus {
   syncStatus: string;
   bumpPRLink: string;
   upstreamOwnerLink: string;
+  previewUrl: string;
 }
 
 export type Statuses = {
@@ -37,12 +39,14 @@ export async function getStatus(
 
     const syncStatus = await getSyncStatus(repo, "main", owner, upstreamOwner);
     const workflowStatus = await getWorkflowResult(bumpNumber, repo, owner);
+    const previewUrl = await getPreviewUrl(bumpNumber, repo, owner);
 
     return {
       workflowStatus,
       syncStatus,
       bumpPRLink,
       upstreamOwnerLink,
+      previewUrl,
     };
   });
 

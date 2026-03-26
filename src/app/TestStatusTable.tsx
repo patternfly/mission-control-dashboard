@@ -1,7 +1,11 @@
 import React from "react";
 
 import {
+  Bullseye,
   Button,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateVariant,
   PageSection,
   Toolbar,
   ToolbarContent,
@@ -9,6 +13,8 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
+import SkeletonTable from "@patternfly/react-component-groups/dist/cjs/SkeletonTable";
+import ExclamationCircleIcon from "@patternfly/react-icons/dist/dynamic/icons/exclamation-circle-icon";
 import { repoStatus } from "@/getters";
 import { useSession } from "next-auth/react";
 
@@ -21,6 +27,8 @@ export interface TestStatusItem extends Omit<repoStatus, "workflowStatus"> {
 
 export interface TestStatusTableProps {
   statusItems: TestStatusItem[];
+  isLoading: boolean;
+  hasError: boolean;
   refresh: () => Promise<void>;
   submit: () => Promise<void>;
   renewBumps: () => Promise<void>;
@@ -28,6 +36,8 @@ export interface TestStatusTableProps {
 
 export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
   statusItems,
+  isLoading,
+  hasError,
   refresh,
   submit,
   renewBumps,
@@ -102,7 +112,51 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
     </Toolbar>
   ) : null;
 
-  const columns = ["Name", "Status", "Synced with upstream?"];
+  const columns = ["Name", "Status", "Synced with upstream?", "Preview"];
+
+  if (isLoading) {
+    return (
+      <PageSection isWidthLimited>
+        {toolbar}
+        <SkeletonTable rowsCount={statusItems.length || 8} columns={columns} />
+      </PageSection>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <PageSection isWidthLimited>
+        {toolbar}
+        <Table aria-label="Testing status error">
+          <Thead>
+            <Tr>
+              {columns.map((column) => (
+                <Th key={column}>{column}</Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            <Tr>
+              <Td colSpan={columns.length}>
+                <Bullseye>
+                  <EmptyState
+                    icon={ExclamationCircleIcon}
+                    titleText="Unable to connect"
+                    headingLevel="h2"
+                    variant={EmptyStateVariant.sm}
+                  >
+                    <EmptyStateBody>
+                      There was an error retrieving data. Check your connection and reload the page.
+                    </EmptyStateBody>
+                  </EmptyState>
+                </Bullseye>
+              </Td>
+            </Tr>
+          </Tbody>
+        </Table>
+      </PageSection>
+    );
+  }
 
   return (
     <PageSection isWidthLimited>
@@ -116,7 +170,7 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {statusItems.map((item, rowIndex) => (
+          {statusItems.map((item) => (
             <Tr key={item.name}>
               <Td dataLabel={columns[0]} width={30}>
                 {<a href={item.upstreamOwnerLink} aria-label={`upstream repo ${item.name}`}>{item.name}</a>}
@@ -124,8 +178,15 @@ export const TestStatusTable: React.FunctionComponent<TestStatusTableProps> = ({
               <Td dataLabel={columns[1]} width={30}>
                 {<a href={item.bumpPRLink} aria-label={`dependency bump PR, status ${item.status}`}>{item.status}</a>}
               </Td>
-              <Td dataLabel={columns[1]} width={40}>
+              <Td dataLabel={columns[2]} width={30}>
                 {item.syncStatus.toString()}
+              </Td>
+              <Td dataLabel={columns[3]} width={10}>
+                {item.previewUrl ? (
+                  <a href={item.previewUrl} aria-label={`preview for ${item.name}`}>Preview</a>
+                ) : (
+                  "-"
+                )}
               </Td>
             </Tr>
           ))}
