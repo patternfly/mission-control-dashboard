@@ -18,18 +18,21 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  const refresh = () => {
-    setIsLoading(true);
-    setHasError(false);
-    return axios
+  const fetchData = () =>
+    axios
       .get("/api/status")
       .then((res) => setRepoStatuses(res.data))
       .catch(() => setHasError(true))
       .finally(() => setIsLoading(false));
+
+  const refresh = () => {
+    setIsLoading(true);
+    setHasError(false);
+    return fetchData();
   };
 
   useEffect(() => {
-    refresh();
+    fetchData();
   }, []);
 
   const syncRepos = async () => {
